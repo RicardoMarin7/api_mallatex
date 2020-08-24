@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 4000
 app.use('/api/users', require('./routes/users'))
 app.use('/api/auth', require('./routes/auth'))
 app.use('/api/orders', require('./routes/orders'))
+app.use('/api/articles', require('./routes/articles'))
 
 app.listen(PORT, () => console.log(`El servidor esta corriendo en el puerto:${PORT}`))
 

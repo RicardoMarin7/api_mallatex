@@ -1,53 +1,28 @@
-const Order = require('../models/Orders')
-const Counter = require('../models/Counters')
 const User = require('../models/Users')
 const Article = require('../models/Articles')
-
 const { validationResult } = require('express-validator')
 
-
-const getNextSecuenceValue = async () =>{
-    const filter = { _id: 'ordersfolio'}
-    const update = {$inc:{sequence_value:1}}
-    let nextSecuenceValue = await Counter.findOneAndUpdate(filter,update)
-    return nextSecuenceValue.sequence_value
-}
-
-exports.createOrder = async (req,res) =>{
+exports.createArticle = async (req,res) =>{
 
     const error = validationResult(req)
-
     if(!error.isEmpty()){
         return res.status(400).json({errors:error.array()})
     }
 
-    try {
-        //Crear una nueva orden
-        const order = new Order(req.body)
-        //Guardar creador via json web token
-        order.createdby = req.user.id
-        order.folio = await getNextSecuenceValue()
-        
-        //iteramos cada articulo y verificamos que exista
-        /*order.articles.map( async (article) =>{
-            const dbArticle = await Article.findById(article)
-            if(!dbArticle){
-                return res.status(404).json({msg:`Articulo no encontrado: ${article}`})
-            }
-        })*/
+    const {level} = await User.findById(req.user.id)
 
-      /*  order.articles.forEach( async (article) =>{
-            const dbArticle = await Article.findById(article)
-            if(!dbArticle){
-                return res.status(404).json({msg:`Articulo no encontrado: ${article}`})
-            }
-        })
-    */
-        await order.save()
-        res.json(order)
+    if(level < 2){
+        return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+    }
+    
+    try {
+        //Crear un nuevo articulo
+        const article = new Article(req.body)
+        await article.save()
+        res.json(article)
     } catch (error) {
         console.log(error)
-        res.status(500).send(`Error:${error.message}`)
+        res.status(500).send(`Error ${error.message}`)
     }
 }
 

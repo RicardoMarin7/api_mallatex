@@ -49,7 +49,10 @@ const OrdersSchema = mongoose.Schema({
         type:String,
         trim:true,
         default:'pending'
-    }
+    },
+    articles:[
+        {type: mongoose.Types.ObjectId , ref:'Articles'}
+    ]
 })
 
 module.exports = mongoose.model('Orders', OrdersSchema)
