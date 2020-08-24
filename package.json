@@ -1,0 +1,23 @@
+{
+  "name": "mallatexserver",
+  "version": "1.0.0",
+  "description": "MERN Api para Mallatex",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "author": "Ricardo Marin Tinoco",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.0"
+  }
+}
