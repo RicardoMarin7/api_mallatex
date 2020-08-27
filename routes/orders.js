@@ -12,7 +12,8 @@ router.post('/new',
     [
         check('folio').isEmpty().withMessage('El folio no se puede introducir manualmente'),
         check('currency').not().isEmpty().withMessage('La moneda es obligatoria'),
-        check('articles').isArray().notEmpty().withMessage('La orden debe contener articulos')
+        check('articles').isArray().notEmpty().withMessage('La orden debe contener articulos'),
+        check('provider').notEmpty().isMongoId().withMessage('El proveedor debe ser un id'),
     ],
     OrdersController.createOrder)
 
@@ -27,7 +28,7 @@ router.get('/',
 router.put('/:id',
     authMiddleware,
     [   
-        check('folio').isEmpty()
+        check('folio').isEmpty().withMessage('No se puede modificar el folio')
     ],
     OrdersController.updateOrder)
 

@@ -9,9 +9,7 @@ exports.createArticle = async (req,res) =>{
         return res.status(400).json({errors:error.array()})
     }
 
-    const {level} = await User.findById(req.user.id)
-
-    if(level < 2){
+    if(req.user.level < 2){
         return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
     }
     
@@ -26,71 +24,57 @@ exports.createArticle = async (req,res) =>{
     }
 }
 
-//Obtiene todas las ordenes del usuario actual
-exports.getOrders = async (req,res) =>{
+//Obtiene todos los articulos
+exports.getArticles = async (req,res) =>{
     try {
-        const orders = await Order.find({ createdby: req.user.id }).sort({folio:-1})
-        res.json({orders})
+        const articles = await Article.find().sort({code:-1})
+        res.json({articles})
     } catch (error) {
         console.log(error)
         res.status(500).send('Hubo un error')
     }
 }
 
-//Actualizar Orden
-exports.updateOrder = async (req,res) =>{
+//Actualizar Articulo
+exports.updateArticle = async (req,res) =>{
 
     const error = validationResult(req)
     if(!error.isEmpty()){
         return res.status(400).json({errors:error.array()})
     }
-
-    const {level} = await User.findById(req.user.id)
     
-    //Extraer informacion de proyecto
+    //Extraer informacion de articulo
     const {
-        provider,
-        sentvia,
-        fob,
-        sendemployee,
-        currency,
-        boughtdate,
-        state
+        description,
+        unit,
+        line,
+        price,
     } = req.body
 
-    const newOrder = {}
+    const newArticle = {}
 
-    if(provider){ newOrder.provider = provider }
-    if(sentvia){ newOrder.sentvia = sentvia }
-    if(fob){ newOrder.fob = fob }
-    if(sendemployee){ newOrder.sendemployee = sendemployee }
-    if(currency){ newOrder.currency = currency }
-    if(boughtdate){ newOrder.boughtdate = boughtdate }
-    if(state){
-        if(level < 2){
-            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
-        }
-        newOrder.state = state
+    if(req.user.level < 2){
+        return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
     }
+
+    if(description){ newArticle.description = description }
+    if(unit){ newArticle.unit = unit }
+    if(line){ newArticle.line = line }
+    if(price){ newArticle.price = price }
 
     try {
         //Revisar el id
-        let order = await Order.findById(req.params.id)
+        let article = await Article.findById(req.params.id)
 
-        //Revisar si existe la orden
-        if(!order){
-            return res.status(404).json({msg:'Proyecto no encontrado'})
-        }
-
-        //verificar creador o nivel del usuario
-        if(order.createdby.toString() !== req.user.id){
-            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+        //Revisar si existe el articulo
+        if(!article){
+            return res.status(404).json({msg:'Articulo no encontrado no encontrado'})
         }
 
         //actualizar
-        order = await Order.findByIdAndUpdate({_id: req.params.id}, {$set: newOrder}, {new:true},)
+        article = await Article.findByIdAndUpdate({_id: req.params.id}, {$set: newArticle}, {new:true},)
 
-        res.json({order})
+        res.json({article})
 
     } catch (error) {
         console.log(error)
@@ -98,29 +82,24 @@ exports.updateOrder = async (req,res) =>{
     }
 }
 
-//Eliminar Orden
-exports.deleteOrder = async (req,res) =>{
+//Eliminar Articulo
+exports.deleteArticle = async (req,res) =>{
     try {
          //Revisar el ID
-        let order = await Order.findById(req.params.id)
+        let article = await Article.findById(req.params.id)
 
         // Si la orden existe o no
-        if(!order){
-            return res.status(404).json({msg:'Proyecto no encontrado'})
-        }
-
-        const {level} = await User.findById(req.user.id)
-        
-        if(level < 2){
-            console.log("entro")
-            if(order.createdby.toString() !== req.user.id){
-                return res.status(401).json({msg:'No tienes autorizacion para realizar esta accion'})
-            }
+        if(!article){
+            return res.status(404).json({msg:'Articulo no encontrado'})
         }
         
-        // Eliminar orden
-        await Order.findOneAndRemove({_id: req.params.id})
-        res.json({msg: 'Orden eliminada con exito'})
+        if(req.user.level < 2){
+            return res.status(401).json({msg:'No tienes autorizacion para realizar esta accion'})
+        }
+        
+        // Eliminar Articulo
+        await Article.findOneAndRemove({_id: req.params.id})
+        res.json({msg: 'Articulo eliminado con exito'})
 
     } catch (error) {
         console.log(error)

@@ -18,4 +18,20 @@ router.post('/new',
     ],
     articlesController.createArticle)
 
+router.get('/',
+    auth,
+    articlesController.getArticles)
+
+router.put('/:id',
+    auth,
+    [
+        check('code').isEmpty().withMessage('No se puede modificar el codigo del articulo'),
+        check('price').isNumeric().optional({checkFalsy:true}).withMessage('Debe ser un numero')
+    ],
+    articlesController.updateArticle)
+
+router.delete('/:id',
+    auth,
+    articlesController.deleteArticle)
+
 module.exports = router

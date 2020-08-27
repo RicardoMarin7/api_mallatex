@@ -31,7 +31,8 @@ exports.CreateUser = async (req,res) => {
         //crear y firmar json web token
         const payload = {
             user:{
-                id:user.id
+                id:user.id,
+                level:user.level
             }
         }
         

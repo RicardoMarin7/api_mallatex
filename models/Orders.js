@@ -50,9 +50,11 @@ const OrdersSchema = mongoose.Schema({
         trim:true,
         default:'pending'
     },
-    articles:[
-        {type: mongoose.Types.ObjectId , ref:'Articles'}
-    ]
+    articles:[{
+                article:{type: mongoose.Types.ObjectId , ref:'Articles'},
+                quantity:{type:Number, required:true}
+                }    
+            ]
 })
 
 module.exports = mongoose.model('Orders', OrdersSchema)

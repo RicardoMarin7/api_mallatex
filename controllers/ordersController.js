@@ -13,6 +13,11 @@ const getNextSecuenceValue = async () =>{
     return nextSecuenceValue.sequence_value
 }
 
+const getArticle = async (id) =>{
+    const article = await Article.findById(id)
+    return article
+}
+
 exports.createOrder = async (req,res) =>{
 
     const error = validationResult(req)
@@ -21,6 +26,8 @@ exports.createOrder = async (req,res) =>{
         return res.status(400).json({errors:error.array()})
     }
 
+    
+
     try {
         //Crear una nueva orden
         const order = new Order(req.body)
@@ -28,21 +35,15 @@ exports.createOrder = async (req,res) =>{
         order.createdby = req.user.id
         order.folio = await getNextSecuenceValue()
         
-        //iteramos cada articulo y verificamos que exista
-        /*order.articles.map( async (article) =>{
-            const dbArticle = await Article.findById(article)
-            if(!dbArticle){
-                return res.status(404).json({msg:`Articulo no encontrado: ${article}`})
-            }
-        })*/
+        //Iteramos cada articulo y verificamos que exista
 
-      /*  order.articles.forEach( async (article) =>{
-            const dbArticle = await Article.findById(article)
-            if(!dbArticle){
-                return res.status(404).json({msg:`Articulo no encontrado: ${article}`})
+        for(let i=0;i<order.articles.length;i++){
+            const article = await getArticle(order.articles[i].article)
+            if(!article){
+                return res.status(404).json({msg:`El articulo con el id:${order.articles[i].article} no fue encontrado`})
             }
-        })
-    */
+        }
+
         await order.save()
         res.json(order)
     } catch (error) {
@@ -54,7 +55,11 @@ exports.createOrder = async (req,res) =>{
 //Obtiene todas las ordenes del usuario actual
 exports.getOrders = async (req,res) =>{
     try {
-        const orders = await Order.find({ createdby: req.user.id }).sort({folio:-1})
+        const orders = await Order
+                                .find({ createdby: req.user.id })
+                                .populate({ path:"articles.article"})
+                                .populate('provider')
+                                .sort({folio:-1})
         res.json({orders})
     } catch (error) {
         console.log(error)
@@ -104,7 +109,7 @@ exports.updateOrder = async (req,res) =>{
 
         //Revisar si existe la orden
         if(!order){
-            return res.status(404).json({msg:'Proyecto no encontrado'})
+            return res.status(404).json({msg:'Orden no encontrada'})
         }
 
         //verificar creador o nivel del usuario
@@ -131,13 +136,12 @@ exports.deleteOrder = async (req,res) =>{
 
         // Si la orden existe o no
         if(!order){
-            return res.status(404).json({msg:'Proyecto no encontrado'})
+            return res.status(404).json({msg:'Orden no encontrada'})
         }
 
         const {level} = await User.findById(req.user.id)
         
         if(level < 2){
-            console.log("entro")
             if(order.createdby.toString() !== req.user.id){
                 return res.status(401).json({msg:'No tienes autorizacion para realizar esta accion'})
             }

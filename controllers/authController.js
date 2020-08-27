@@ -31,12 +31,12 @@ exports.Login = async (req,res) =>{
         //crear y firmar json web token
         const payload = {
             user:{
-                id:user.id
+                id:user.id,
+                level:user.level
             }
         }
         
         const base64Secret = Buffer.from(process.env.SECRET).toString('base64')
-        console.log(base64Secret)
 
         //firmar Token
         JsonWebToken.sign(payload,process.env.SECRET,{
@@ -51,5 +51,16 @@ exports.Login = async (req,res) =>{
 
     } catch (error) {
         console.log(error)
+    }
+}
+
+//Obtiene el usuario autenticado
+exports.userAuthenticated = async (req,res) =>{
+    try {
+        const user = await User.findById(req.user.id).select('-password')
+        res.json({user})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({msg:'Hubo un error'})
     }
 }
