@@ -23,6 +23,7 @@ app.use('/api/auth', require('./routes/auth'))
 app.use('/api/orders', require('./routes/orders'))
 app.use('/api/articles', require('./routes/articles'))
 app.use('/api/providers', require('./routes/providers'))
+app.use('/api/requisitions', require('./routes/requisitions'))
 
 app.listen(PORT, () => console.log(`El servidor esta corriendo en el puerto:${PORT}`))
 
