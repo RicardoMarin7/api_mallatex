@@ -34,7 +34,15 @@ const RequisitionsSchema = mongoose.Schema({
                 quantity:{type:Number, required:true},
                 inStock:{type:Boolean,default:'false'}
         }
-    ]
+    ],
+    client:{
+        type:String,
+        trim:true
+    },
+    sendTo:{
+        type:String,
+        trim:true
+    }
 })
 
 module.exports = mongoose.model('Requisitions', RequisitionsSchema)
