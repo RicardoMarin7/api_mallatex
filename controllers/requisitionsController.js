@@ -52,11 +52,22 @@ exports.createRequisition = async (req,res) =>{
 //Obtiene todas las ordenes del usuario actual
 exports.getRequisitions = async (req,res) =>{
     try {
-        const requisitions = await Requisition
+        let requisitions
+        if(req.user.level < 2){
+            requisitions = await Requisition
                                 .find({ createdby: req.user.id })
                                 .populate({ path:"articles.article"})
                                 .populate('createdby')
                                 .sort({folio:-1})
+        }
+        else{
+            requisitions = await Requisition
+                                .find()
+                                .populate({ path:"articles.article"})
+                                .populate('createdby')
+                                .sort({folio:-1})
+        }
+        
         res.json({requisitions})
     } catch (error) {
         console.log(error)

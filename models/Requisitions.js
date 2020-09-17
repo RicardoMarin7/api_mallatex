@@ -19,7 +19,7 @@ const RequisitionsSchema = mongoose.Schema({
     state:{
         type:String,
         trim:true,
-        default:'pending'
+        default:'pendiente'
     },
     comments:{
         type:String,
