@@ -59,7 +59,12 @@ const OrdersSchema = mongoose.Schema({
                 article:{type: mongoose.Types.ObjectId , ref:'Articles'},
                 quantity:{type:Number, required:true}
                 }    
-            ]
+    ],
+    requisitionFolio:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Requisition',
+    }
+
 })
 
 module.exports = mongoose.model('Orders', OrdersSchema)
