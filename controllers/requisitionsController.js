@@ -86,6 +86,7 @@ exports.getAproved = async (req,res) =>{
             requisitions = await Requisition
                                 .find({ reviewed: 'true', state:'aprobada' })
                                 .populate({ path:"articles.article"})
+                                .populate({ path:"reviewedArticles.article"})
                                 .populate('createdby','-password')
                                 .populate('reviewedby','-password')
                                 .populate('stateby','-password')
