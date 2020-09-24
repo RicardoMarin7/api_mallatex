@@ -21,6 +21,10 @@ const RequisitionsSchema = mongoose.Schema({
         trim:true,
         default:'pendiente'
     },
+    stateby:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     comments:{
         type:String,
         trim:true,
@@ -29,11 +33,19 @@ const RequisitionsSchema = mongoose.Schema({
         type:Boolean,
         default:false
     },
+    reviewedby:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     articles:[{
                 article:{type: mongoose.Types.ObjectId , ref:'Articles'},
                 quantity:{type:Number, required:true},
-                inStock:{type:Boolean,default:'false'}
         }
+    ],
+    reviewedArticles:[{
+                article:{type: mongoose.Types.ObjectId , ref:'Articles'},
+                quantity:{type:Number, required:true},
+            }
     ],
     client:{
         type:String,

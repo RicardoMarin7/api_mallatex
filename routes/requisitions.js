@@ -21,6 +21,10 @@ router.get('/',
     authMiddleware,
     RequisitionsController.getRequisitions)
 
+router.get('/aproved',
+authMiddleware,
+RequisitionsController.getRequisitions)
+
 // /api/Requisitions/ via ID
 // Actualizar una requisicion
 router.put('/:id',

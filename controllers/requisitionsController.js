@@ -57,17 +57,43 @@ exports.getRequisitions = async (req,res) =>{
             requisitions = await Requisition
                                 .find({ createdby: req.user.id })
                                 .populate({ path:"articles.article"})
-                                .populate('createdby')
+                                .populate('createdby','-password')
+                                .populate('reviewedby','-password')
+                                .populate('stateby','-password')
                                 .sort({folio:-1})
         }
         else{
             requisitions = await Requisition
                                 .find()
                                 .populate({ path:"articles.article"})
-                                .populate('createdby')
+                                .populate('createdby','-password')
+                                .populate('reviewedby','-password')
+                                .populate('stateby','-password')
                                 .sort({folio:-1})
         }
         
+        res.json({requisitions})
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Hubo un error')
+    }
+}
+
+exports.getAproved = async (req,res) =>{
+    try {
+        let requisitions
+        if(req.user.level > 2){
+            requisitions = await Requisition
+                                .find({ reviewed: 'true', state:'aprobada' })
+                                .populate({ path:"articles.article"})
+                                .populate('createdby','-password')
+                                .populate('reviewedby','-password')
+                                .populate('stateby','-password')
+                                .sort({folio:-1})
+        }
+        else{
+            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+        }
         res.json({requisitions})
     } catch (error) {
         console.log(error)
@@ -89,14 +115,16 @@ exports.updateRequisition = async (req,res) =>{
     const {
         comments,
         reviewed,
-        state
+        state,
+        reviewedArticles,
+        reviewedby
     } = req.body
 
     const  newRequisition = {}
 
     if(comments){  newRequisition.comments = comments }
     if(state){
-        if(level < 2){
+        if(level < 3){
             return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
         }
         newRequisition.state = state
@@ -107,6 +135,20 @@ exports.updateRequisition = async (req,res) =>{
             return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
         }
         newRequisition.reviewed = reviewed
+    }
+
+    if(reviewedArticles){
+        if(level < 2){
+            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+        }
+        newRequisition.reviewedArticles = reviewedArticles
+    }
+
+    if(reviewedArticles){
+        if(level < 2){
+            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+        }
+        newRequisition.reviewedby = reviewedby
     }
 
     try {
