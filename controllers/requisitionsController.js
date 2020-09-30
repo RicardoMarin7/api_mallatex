@@ -124,12 +124,6 @@ exports.updateRequisition = async (req,res) =>{
     const  newRequisition = {}
 
     if(comments){  newRequisition.comments = comments }
-    if(state){
-        if(level < 3){
-            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
-        }
-        newRequisition.state = state
-    }
 
     if(reviewed){
         if(level < 2){
@@ -152,6 +146,13 @@ exports.updateRequisition = async (req,res) =>{
         newRequisition.reviewedby = reviewedby
     }
 
+    if(state){
+        if(level < 2){
+            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
+        }
+        newRequisition.state = state
+    }
+
     try {
         //Revisar el id
         let requisition = await Requisition.findById(req.params.id)
@@ -159,11 +160,6 @@ exports.updateRequisition = async (req,res) =>{
         //Revisar si existe la orden
         if(!requisition){
             return res.status(404).json({msg:'Requisicion no encontrada'})
-        }
-
-        //verificar creador o nivel del usuario
-        if(requisition.createdby.toString() !== req.user.id){
-            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
         }
 
         //actualizar
