@@ -55,11 +55,26 @@ exports.createOrder = async (req,res) =>{
 //Obtiene todas las ordenes del usuario actual
 exports.getOrders = async (req,res) =>{
     try {
-        const orders = await Order
-                                .find({ createdby: req.user.id })
+
+        let orders
+        if(req.user.level < 2){
+            orders = await Order
+                                .find({ requestedby: req.user.id })
                                 .populate({ path:"articles.article"})
+                                .populate('createdby','-password')
+                                .populate('requestedby','-password')
                                 .populate('provider')
                                 .sort({folio:-1})
+        }
+        else{
+            orders = await Order
+                                .find()
+                                .populate({ path:"articles.article"})
+                                .populate('createdby','-password')
+                                .populate('reviewedby','-password')
+                                .populate('provider')
+                                .sort({folio:-1})
+        }
         res.json({orders})
     } catch (error) {
         console.log(error)

@@ -30,7 +30,7 @@ const OrdersSchema = mongoose.Schema({
         trim:true,
         default:''
     },
-    sendemployee:{
+    shipping_conditions:{
         type:String,
         trim:true,
         default:''
@@ -50,21 +50,41 @@ const OrdersSchema = mongoose.Schema({
         trim:true,
         default:Date.now()
     },
-    state:{
-        type:String,
-        trim:true,
-        default:'pending'
-    },
     articles:[{
                 article:{type: mongoose.Types.ObjectId , ref:'Articles'},
-                quantity:{type:Number, required:true}
+                quantity:{type:Number, required:true},
+                price:{type:Number,required:true},
+                import:{type:Number,required:true},
                 }    
     ],
     requisitionFolio:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Requisition',
+        type: Number,
+        required:true,
+    },
+    iva:{
+        type:Number,
+        required:true
+    }, 
+    total:{
+        type:Number,
+        required:true
+    },
+    subtotal:{
+        type:Number,
+        required:true
+    },
+    shipping_cost:{
+        type:Number,
+        trim:true
+    },
+    other_spending:{
+        type:Number,
+        trim:true
+    },
+    comments:{
+        type:String,
+        trim:true
     }
-
 })
 
 module.exports = mongoose.model('Orders', OrdersSchema)

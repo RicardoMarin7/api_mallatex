@@ -84,7 +84,7 @@ exports.getAproved = async (req,res) =>{
         let requisitions
         if(req.user.level > 2){
             requisitions = await Requisition
-                                .find({ reviewed: 'true', state:'aprobada' })
+                                .find({ reviewed: 'true', state:'aprobada', converted:'false'})
                                 .populate({ path:"articles.article"})
                                 .populate({ path:"reviewedArticles.article"})
                                 .populate('createdby','-password')
@@ -118,7 +118,8 @@ exports.updateRequisition = async (req,res) =>{
         reviewed,
         state,
         reviewedArticles,
-        reviewedby
+        reviewedby,
+        converted
     } = req.body
 
     const  newRequisition = {}
@@ -151,6 +152,10 @@ exports.updateRequisition = async (req,res) =>{
             return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'})
         }
         newRequisition.state = state
+    }
+
+    if(converted){
+        newRequisition.converted = converted
     }
 
     try {

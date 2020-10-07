@@ -54,6 +54,10 @@ const RequisitionsSchema = mongoose.Schema({
     sendTo:{
         type:String,
         trim:true
+    },
+    converted:{
+        type:Boolean,
+        default:false
     }
 })
 
