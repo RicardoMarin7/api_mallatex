@@ -72,6 +72,7 @@ exports.getOrders = async (req,res) =>{
                                 .populate({ path:"articles.article"})
                                 .populate('createdby','-password')
                                 .populate('reviewedby','-password')
+                                .populate('requestedby','-password')
                                 .populate('provider')
                                 .sort({folio:-1})
         }
