@@ -3,6 +3,7 @@ const express = require('express')
 const router = express.Router()
 const usuarioController = require('../controllers/userController')
 const { check } = require('express-validator')
+const auth = require('../middleware/auth')
 
 
 //Crea un usuario
@@ -14,5 +15,9 @@ router.post('/new',
         check('password').isLength({ min:8 }).withMessage('El password debe tener minimo 8 caracteres')
     ],
     usuarioController.CreateUser)
+
+router.get('/',
+auth,
+usuarioController.getUsers)
 
 module.exports = router

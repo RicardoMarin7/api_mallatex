@@ -57,3 +57,19 @@ exports.CreateUser = async (req,res) => {
         res.status(400).send('Existe un error al insertar el registro')
     }
 }
+
+exports.getUsers = async (req,res) =>{
+    try {
+        if(req.user.level < 3){
+            return res.status(401).json({msg:'No tienes autorizacion para hacer este movimiento'}) 
+        }
+
+    const users = await User
+                            .find().select('-password')
+
+        res.json({users})
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Hubo un error')
+    }
+}
